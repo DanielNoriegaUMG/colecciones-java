@@ -1,55 +1,67 @@
 package org.alura;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import org.alura.model.Clase;
+import org.alura.model.Cursos;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Ejemplo9 {
-
-    public static final List<List<Integer>> listas = new ArrayList<List<Integer>>(){
-        {
-            add(new LinkedList<>());
-            add(new ArrayList<>());
-        }
-    };
-
     public static void main(String[] args) {
-        for(List<Integer> lista: listas){
-            final String nombreImplementacion = lista.getClass().getSimpleName();
-            // add
-            long inicio = System.currentTimeMillis();
-            for (int i = 0; i < 10000; i++){
-                lista.add(i);
-            }
 
-            long fin = System.currentTimeMillis();
-            long duracion = fin - inicio;
-            System.out.println(nombreImplementacion + " add: " +  duracion);
+        Cursos curso1 = new Cursos("Historia", 36);
+        Cursos curso2 = new Cursos("Algebra", 25);
+        Cursos curso3 = new Cursos("Aritmetica", 42);
+        Cursos curso4 = new Cursos("Estadistica", 43);
+        Cursos curso5 = new Cursos("Quimica", 26);
+        Cursos curso6 = new Cursos("Historia", 18);
+        Cursos curso7 = new Cursos("Matematicas", 24);
+        Cursos curso8 = new Cursos("Geografia", 12);
+        Cursos curso9 = new Cursos("Contabilidad", 45);
+        Cursos curso10 = new Cursos("Estadistica", 38);
 
-            //get
-            inicio = System.currentTimeMillis();
-            for(int i = 0; i < 10000; i++){
-                lista.get(i);
-            }
+        ArrayList<Cursos> materias = new ArrayList<>();
+        materias.add(curso1);
+        materias.add(curso2);
+        materias.add(curso3);
+        materias.add(curso4);
+        materias.add(curso5);
+        materias.add(curso6);
+        materias.add(curso7);
+        materias.add(curso8);
+        materias.add(curso9);
+        materias.add(curso10);
 
-            fin = System.currentTimeMillis();
-            duracion = fin - inicio;
-            System.out.println(nombreImplementacion + " get: " + duracion);
+        Collections.sort(materias, Comparator.comparing(Cursos::getNombre).reversed());
 
-            // remove
-            inicio = System.currentTimeMillis();
-            for(int i = 9999; i >= 0; i--){
-                lista.remove(i);
-            }
-
-            fin = System.currentTimeMillis();
-            duracion = fin - inicio;
-            System.out.println(nombreImplementacion + " remove: " + duracion);
-
-            // LINKEDLIST: hace las pruebas mas rapidas
-            // ejemplo de LinkedList: A <-> B1 <-> C <-> D <-> E
-            //ARRAYLIST A -> B1 -> B2 -> D -> E
+        int tiempo = 0;
+        for (Cursos curso: materias){
+            tiempo += curso.getTiempo();
         }
+
+        System.out.println("Tiempo: " + tiempo);
+
+        // otra forma de medir el tiempo mas sencilla
+        System.out.println("Tiempo: " + materias.stream().mapToInt(Cursos::getTiempo).sum());
+
+        // devolver el numero mayor de las horas de cursos
+        System.out.println("Numero mayor en horas: " + materias.stream().mapToInt(Cursos::getTiempo).max().getAsInt());
+
+        // promedio de horas
+        System.out.println("Promedio de horas: " + materias.stream().mapToInt(Cursos::getTiempo).average().getAsDouble());
+
+        // hora minima del los cursos
+        System.out.println("Hora minima: " +  materias.stream().mapToInt(Cursos::getTiempo).min().getAsInt());
+
+        Map<String, List<Cursos>> groupCurso = materias.stream().collect(Collectors.groupingBy(Cursos::getNombre));
+
+        // contar el numero de veces que se repite una materia
+        groupCurso.forEach((key, value) -> System.out.println(key + " = " + value.size()));
+
+        System.out.println(materias.parallelStream().count()); // numero de materias
+        System.out.println(materias.parallelStream().mapToInt(Cursos::getTiempo).sum()); // suma de numero de horas
+        System.out.println(materias.stream().findFirst().get());
+        System.out.println(materias.stream().findAny().get());
     }
 }
